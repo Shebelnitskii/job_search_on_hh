@@ -13,9 +13,8 @@ class HeadHunterAPI():
         key_word Ключевое слово для поиска вакансии.
         return Список объектов класса Vacancy.
         """
-        params = {"text": "IT",
-                  "employer_id": 3529, ### id работодателя
-                  'specialization': 1} ### код отрасли (IT, компьютеры, связь)
+        params = {"employer_id": 733,  ### id работодателя
+                  'specialization': 1}  ### код отрасли (IT, компьютеры, связь)
         # headers = {
         #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"}
         response = requests.get(self.url, params=params)
@@ -23,8 +22,8 @@ class HeadHunterAPI():
             data = response.json()
             vacancies_data = data['items']
             vacancies = []
+            employers = []
             for vacancy in vacancies_data:
-                title = vacancy['name']  ### Название вакансии
                 salary_data = vacancy['salary']
                 try:
                     if salary_data['to'] == None:  ### Проверка на диапазон зарплаты
@@ -37,16 +36,22 @@ class HeadHunterAPI():
                 except:
                     salary = {'from': 0,
                               'currency': 'RUR'}  ### Если зарплата не указано то в значение фром сохраняется нулевое значение
-                description = vacancy['snippet']['requirement']  ### Описание вакансии
-                employer = vacancy['employer']['name']
-                url = vacancy['alternate_url']  ### url ссылка на вакансию
-                vacancy = {'title': title,
+                vacancy = {'id': vacancy['id'],
+                           'job_title': vacancy['name'],  ### Название вакансии
                            'salary': salary,
-                           'description': description,
-                           'employ': employer,
-                           'url': url}
+                           'description': vacancy['snippet']['requirement'],  ### Описание вакансии
+                           'area': vacancy['area'],
+                           'employer': vacancy['employer']['name'],
+                           'url': vacancy['alternate_url'],  ### url ссылка на вакансию
+                           'date': vacancy['published_at']} ### дата публикации вакансии
+                employer = {'id_vacancy': vacancy['id'],
+                            'id_company': vacancy['employer']['id'],
+                            'employer_name': vacancy['employer']['name']
+                            }
                 vacancies.append(vacancy)
-            return vacancies
+                employers.append(employer)
+            return vacancies, employers
         else:
             vacancies = []
-            return vacancies
+            employers = []
+            return vacancies, employers
