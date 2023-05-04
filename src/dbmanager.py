@@ -70,8 +70,36 @@ class DBManager:
                 FROM vacancy)
                 """
             )
-            results = cur.fetchall()
-            for row in results:
+            result = cur.fetchall()
+            for row in result:
+                job_title, salary_from, salary_to, currency, description, area, url = row
+                if salary_from == 0 and salary_to == 0:
+                    print(
+                        f'Вакансия: {job_title}\nЗарплата не указана\nОписание вакансии: {description}\nГород: {area}\nСсылка:{url}\n')
+                elif salary_from == 0:
+                    print(
+                        f'Вакансия: {job_title}\nЗарплата: до {salary_to} {currency}\nОписание вакансии: {description}\nГород: {area}\nСсылка:{url}\n')
+                elif salary_to == 0:
+                    print(
+                        f'Вакансия: {job_title}\nЗарплата: от {salary_from} {currency}\nОписание вакансии: {description}\nГород: {area}\nСсылка:{url}\n')
+                else:
+                    print(
+                        f'Вакансия: {job_title}\nЗарплата: от {salary_from} до {salary_to} {currency}\nОписание вакансии: {description}\nГород: {area}\nСсылка:{url}\n')
+
+    def get_vacancies_with_keyword(self, keyword):
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT vacancy.job_title, vacancy.salary_from, vacancy.salary_to, 
+                vacancy.currency, vacancy.description, vacancy.area, vacancy.url
+                FROM vacancy
+                JOIN employers ON vacancy.id_employer = employers.id_company
+                WHERE LOWER(vacancy.job_title) LIKE %s
+                """,
+                ('%' + keyword + '%',)
+            )
+            result = cur.fetchall()
+            for row in result:
                 job_title, salary_from, salary_to, currency, description, area, url = row
                 if salary_from == 0 and salary_to == 0:
                     print(
