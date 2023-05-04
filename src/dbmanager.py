@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 import psycopg2
-
 
 class DBManager:
     def __init__(self, host, database, user, password):
         self.conn = psycopg2.connect(host=host, database=database, user=user, password=password)
 
     def get_companies_and_vacancies_count(self):
+        '''
+        Функция, которая выводит данные о компаниях и количество вакансий из БД
+        '''
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -20,6 +23,9 @@ class DBManager:
                 print(f'В компании {company} {count} вакансий')
 
     def get_all_vacancies(self):
+        '''
+        Функция, которая выводит данные о всех вакансиях из БД
+        '''
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -33,7 +39,7 @@ class DBManager:
                 employer_name, job_title, salary_from, salary_to, currency, url = row
                 if salary_from == 0 and salary_to == 0:
                     print(
-                        f'Вакансия: {job_title} от {employer_name} \nЗарплата не указана\nСсылка:{url}\n')
+                        f'Вакансия: {job_title} от "{employer_name}" \nЗарплата не указана\nСсылка:{url}\n')
                 elif salary_from == 0:
                     print(
                         f'Вакансия: {job_title} от "{employer_name}"\nЗарплата: до {salary_to} {currency}\nСсылка:{url}\n')
@@ -45,6 +51,9 @@ class DBManager:
                         f'Вакансия: {job_title} от "{employer_name}"\nЗарплата: от {salary_from} до {salary_to} {currency}\nСсылка:{url}\n')
 
     def get_avg_salary(self):
+        """
+        Функция, которая выводит информацию о средней зарплата по всем вакансиям
+        """
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -58,6 +67,9 @@ class DBManager:
                 print(f'Средняя зарплата по вакансиям в {currency}: {round(avg_salary, 2)}')
 
     def get_vacancies_with_higher_salary(self):
+        """
+        Функция выводит вакансии у которых значение зарплаты выше средней по таблице
+        """
         with self.conn.cursor() as cur:
             cur.execute(
                 """
@@ -87,6 +99,9 @@ class DBManager:
                         f'Вакансия: {job_title}\nЗарплата: от {salary_from} до {salary_to} {currency}\nОписание вакансии: {description}\nГород: {area}\nСсылка:{url}\n')
 
     def get_vacancies_with_keyword(self, keyword):
+        """
+        Функция выводит вакансии в которых присутствует ключевое слово keyword
+        """
         with self.conn.cursor() as cur:
             cur.execute(
                 """
