@@ -24,3 +24,21 @@ site TEXT
 SELECT employers.employer_name, COUNT(vacancy.id) as count_vacancies
 FROM vacancy JOIN employers ON vacancy.id_employer = employers.id_company
 GROUP BY employers.employer_name
+
+### sql запрос на выгрузку всех вакансий и ссылка на вакансию
+SELECT employers.employer_name, vacancy.job_title, vacancy.salary_from, vacancy.salary_to,
+vacancy.currency, vacancy.url
+FROM vacancy JOIN employers ON vacancy.id_employer = employers.id_company
+
+### sql запрос на получение средней зарплаты по вакансиям в определённой валюте
+SELECT AVG(salary_from)+AVG(salary_to)/2 as avg_salary, currency FROM vacancy
+GROUP BY currency
+
+### sql запрос на получение вакансий у которых зарплата выше средней по таблице
+SELECT vacancy.job_title, vacancy.salary_from, vacancy.salary_to, vacancy.currency, vacancy.description, vacancy.area, vacancy.url
+FROM vacancy
+JOIN employers ON vacancy.id_employer = employers.id_company
+GROUP BY vacancy.job_title, vacancy.salary_from, vacancy.salary_to, vacancy.currency, vacancy.description, vacancy.area, vacancy.url
+HAVING AVG(vacancy.salary_from)+AVG(salary_to)/2 > (
+SELECT AVG(salary_from)+AVG(salary_to)/2
+FROM vacancy)
