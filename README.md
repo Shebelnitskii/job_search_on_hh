@@ -8,6 +8,7 @@
 Требования:
 - Python 3.7+
 - База данных PostgreSQL
+
 Библиотеки Python:
 - psycopg2
 - requests
