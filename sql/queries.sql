@@ -42,3 +42,10 @@ GROUP BY vacancy.job_title, vacancy.salary_from, vacancy.salary_to, vacancy.curr
 HAVING AVG(vacancy.salary_from)+AVG(salary_to)/2 > (
 SELECT AVG(salary_from)+AVG(salary_to)/2
 FROM vacancy)
+
+### sql запрос на поиск в названии вакансии
+SELECT vacancy.job_title, vacancy.salary_from, vacancy.salary_to,
+vacancy.currency, vacancy.description, vacancy.area, vacancy.url
+FROM vacancy
+JOIN employers ON vacancy.id_employer = employers.id_company
+WHERE LOWER(vacancy.job_title) LIKE '%водитель%'
